@@ -12,5 +12,22 @@ I am normal text
 I am *italic* text.
 I am **bold** text.
 
-- I am a list item
-- I am another list item
+- I am a list item.
+- I am another list item.
+
+```{r}
+library(tidyverse)
+library(spotifyr)
+source('spotify.R')
+```
+
+```{r}
+#karaoke playlist: 3sJGjIN1wa9KszybCcj0hB
+#chill playlist: 0TIMetHqr6J6S6QR19x8yi
+chill_playlist = get_playlist_audio_features('11143302739','0TIMetHqr6J6S6QR19x8yi') 
+karaoke_playlist = get_playlist_audio_features('11143302739','3sJGjIN1wa9KszybCcj0hB') 
+chill_playlist
+karaoke_playlist
+
+```
+
