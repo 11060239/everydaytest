@@ -3,31 +3,42 @@ title: "Test Page for Everyday Listening"
 output: github_document
 ---
 
-# I am a big heading
-## I am a smaller heading
-### I am even smaller
+## My playlists
 
-I am normal text
+Of all my playlists on Spotify, there are two that I like to listen to the most. One is called *Chill* and the other is called *Karaoke*. *Chill* contains a lot of songs to relax to. I think these are slower, acoustic songs, possibly played in minor more often than major. I think the songs in *Karaoke* are more energetic, maybe easier to dance to and also louder. Let's see if the Spotify API would say the same.
 
-I am *italic* text.
-I am **bold** text.
-
-- I am a list item.
-- I am another list item.
-
-```{r}
+```{r, include = FALSE}
 library(tidyverse)
 library(spotifyr)
 source('spotify.R')
 ```
 
-```{r}
-#karaoke playlist: 3sJGjIN1wa9KszybCcj0hB
-#chill playlist: 0TIMetHqr6J6S6QR19x8yi
-chill_playlist = get_playlist_audio_features('11143302739','0TIMetHqr6J6S6QR19x8yi') 
-karaoke_playlist = get_playlist_audio_features('11143302739','3sJGjIN1wa9KszybCcj0hB') 
-chill_playlist
-karaoke_playlist
+```{r, include = FALSE}
+chill = get_playlist_audio_features('11143302739','0TIMetHqr6J6S6QR19x8yi') 
+karaoke = get_playlist_audio_features('11143302739','3sJGjIN1wa9KszybCcj0hB') 
 
+spotify_features <-
+  ## Use the tribble() function to give one-word labels for your playlists, e.g.,
+  ## type and subtype, or group member and year, plus the URIs for the Spotify
+  ## user and playlist. Often the user is just 'spotify'.
+  tribble(
+    ~type, ~user, ~playlist,
+    'Chill', '11143302739', '0TIMetHqr6J6S6QR19x8yi',
+    'Karaoke', '11143302739', '3sJGjIN1wa9KszybCcj0hB'
+  ) %>% 
+  ## This line downloads the features from Spotify.
+  mutate(features = map2(user, playlist, get_playlist_audio_features)) %>% 
+  ## Use the select() function to keep your label columns, plus the features.
+  select(type, features) %>% 
+  ## This line expands the features into a single table.
+  unnest(features)
+```
+
+```{r}
+spotify_features %>% 
+  ## Try grouping by group member and/or year.
+  group_by(type) %>% 
+  ## Try different features and different summary functions.
+  summarise(Tempo=mean(tempo), Acousticness=mean(acousticness), Mode=mean(mode), Energy=mean(energy), Danceability=mean(danceability), Loudness=mean(loudness))
 ```
 
